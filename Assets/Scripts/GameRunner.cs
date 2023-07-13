@@ -1,6 +1,6 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameRunner : MonoBehaviour
 {
@@ -9,6 +9,24 @@ public class GameRunner : MonoBehaviour
 
     public bool isOnAssignment = false;
     public Location targetDestination;
+
+    private static bool startGhostRace = false;
+    private GhostSystem ghostSystem;
+
+    private void Start()
+    {
+        ghostSystem = GameObject.Find("GhostSystem").GetComponent<GhostSystem>();
+
+        if (startGhostRace)
+        {
+            var player = GameObject.Find("Player").GetComponent<PlayerControl>();
+            ghostSystem.ApplyStartStateToTarget(player);
+
+            ghostSystem.StartPlayback();
+
+            startGhostRace = false;
+        }
+    }
 
     public void RegisterNPC(NPC npc)
     {
@@ -36,5 +54,16 @@ public class GameRunner : MonoBehaviour
                 npc.SetParticlesActive(particlesOn);
             }
         }
+    }
+
+    public void StartGhostRace()
+    {
+        if (ghostSystem.IsRecording)
+        {
+            ghostSystem.ToggleRecording();
+        }
+
+        startGhostRace = true;
+        SceneManager.LoadScene(0);
     }
 }
